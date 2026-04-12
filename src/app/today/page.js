@@ -17,6 +17,7 @@ function getToday() {
 export default function TodayPage() {
   const router = useRouter();
   const [userId, setUserId] = useState(null);
+  const [userName, setUserName] = useState("");
   const [selectedDate, setSelectedDate] = useState(getToday());
   const [habits, setHabits] = useState({});
   const [creation, setCreation] = useState(0);
@@ -35,11 +36,14 @@ export default function TodayPage() {
       } = await supabase.auth.getSession();
       if (session) {
         setUserId(session.user.id);
+        const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || "User";
+        setUserName(name.split(" ")[0]);
         return;
       }
       const guestId = localStorage.getItem("mode_guest_id");
       if (guestId) {
         setUserId(guestId);
+        setUserName("Guest");
         return;
       }
       router.replace("/");
@@ -116,7 +120,12 @@ export default function TodayPage() {
     <>
       <NavToggle />
 
-      <div className="flex justify-center mb-6">
+      <div className="flex flex-col items-center justify-center mb-8 mt-2 space-y-4">
+        {userName && (
+          <h2 className="text-xl font-semibold text-white tracking-tight">
+            Hi, {userName}
+          </h2>
+        )}
         <input
           type="date"
           value={selectedDate}

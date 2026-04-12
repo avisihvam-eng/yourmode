@@ -9,6 +9,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     async function checkAuth() {
@@ -16,8 +17,13 @@ export default function Home() {
         data: { session },
       } = await supabase.auth.getSession();
       const guestId = localStorage.getItem("mode_guest_id");
-      if (session || guestId) {
+      if (session) {
         setIsLoggedIn(true);
+        const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || "User";
+        setUserName(name.split(" ")[0]);
+      } else if (guestId) {
+        setIsLoggedIn(true);
+        setUserName("Guest");
       }
       setLoading(false);
     }
@@ -100,12 +106,15 @@ export default function Home() {
           </div>
         )}
         {isLoggedIn ? (
-          <button
-            onClick={() => router.push("/today")}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-lg bg-white text-bg text-sm font-semibold hover:bg-gray-100"
-          >
-            Go to your Tracker →
-          </button>
+          <div className="flex flex-col items-center space-y-3">
+            <p className="text-white font-medium text-lg">Hi, {userName}</p>
+            <button
+              onClick={() => router.push("/today")}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-lg bg-white text-bg text-sm font-semibold hover:bg-gray-100"
+            >
+              Go to your Tracker →
+            </button>
+          </div>
         ) : (
           <>
             <button
