@@ -17,6 +17,7 @@ function getToday() {
 export default function TodayPage() {
   const router = useRouter();
   const [userId, setUserId] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(getToday());
   const [habits, setHabits] = useState({});
   const [creation, setCreation] = useState(0);
   const [reflection, setReflection] = useState(0);
@@ -46,29 +47,34 @@ export default function TodayPage() {
     init();
   }, [router]);
 
-  // Load today's entry
+  // Load selected date's entry
   useEffect(() => {
     if (!userId) return;
     async function load() {
-      const entry = await getEntry(userId, getToday());
+      const entry = await getEntry(userId, selectedDate);
       if (entry) {
         setHabits(entry.habits || {});
         setCreation(entry.creation || 0);
         setReflection(entry.reflection || 0);
         setConsumption(entry.consumption || 0);
+      } else {
+        setHabits({});
+        setCreation(0);
+        setReflection(0);
+        setConsumption(0);
       }
       setLoaded(true);
     }
     load();
-  }, [userId]);
+  }, [userId, selectedDate]);
 
   // Debounced save
   const save = useCallback(
-    (h, c, r, co) => {
+    (h, c, r, co, date) => {
       if (!userId) return;
       if (saveTimer.current) clearTimeout(saveTimer.current);
       saveTimer.current = setTimeout(() => {
-        upsertEntry(userId, getToday(), {
+        upsertEntry(userId, date, {
           habits: h,
           creation: c,
           reflection: r,
@@ -82,20 +88,20 @@ export default function TodayPage() {
   function toggleHabit(key) {
     const next = { ...habits, [key]: !habits[key] };
     setHabits(next);
-    save(next, creation, reflection, consumption);
+    save(next, creation, reflection, consumption, selectedDate);
   }
 
   function updateCreation(v) {
     setCreation(v);
-    save(habits, v, reflection, consumption);
+    save(habits, v, reflection, consumption, selectedDate);
   }
   function updateReflection(v) {
     setReflection(v);
-    save(habits, creation, v, consumption);
+    save(habits, creation, v, consumption, selectedDate);
   }
   function updateConsumption(v) {
     setConsumption(v);
-    save(habits, creation, reflection, v);
+    save(habits, creation, reflection, v, selectedDate);
   }
 
   if (!loaded) {
@@ -109,6 +115,17 @@ export default function TodayPage() {
   return (
     <>
       <NavToggle />
+
+      <div className="flex justify-center mb-6">
+        <input
+          type="date"
+          value={selectedDate}
+          max={getToday()}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          className="bg-bg border border-border rounded-lg px-4 py-2 text-sm text-text font-medium outline-none hover:border-border-hover focus:border-white transition-colors"
+          style={{ colorScheme: "dark" }}
+        />
+      </div>
 
       <HabitGrid habits={habits} onToggle={toggleHabit} />
 

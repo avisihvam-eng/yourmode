@@ -8,20 +8,16 @@ export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     async function checkAuth() {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      if (session) {
-        router.replace("/today");
-        return;
-      }
       const guestId = localStorage.getItem("mode_guest_id");
-      if (guestId) {
-        router.replace("/today");
-        return;
+      if (session || guestId) {
+        setIsLoggedIn(true);
       }
       setLoading(false);
     }
@@ -103,19 +99,30 @@ export default function Home() {
             {authError}
           </div>
         )}
-        <button
-          onClick={handleGoogle}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-lg bg-white text-bg text-sm font-semibold"
-        >
-          Start tracking today
-        </button>
+        {isLoggedIn ? (
+          <button
+            onClick={() => router.push("/today")}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-lg bg-white text-bg text-sm font-semibold hover:bg-gray-100"
+          >
+            Go to your Tracker →
+          </button>
+        ) : (
+          <>
+            <button
+              onClick={handleGoogle}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-lg bg-white text-bg text-sm font-semibold"
+            >
+              Start tracking today
+            </button>
 
-        <button
-          onClick={handleGuest}
-          className="w-full px-4 py-3.5 rounded-lg border border-border text-sm font-medium text-text-secondary hover:text-text hover:border-border-hover"
-        >
-          Try as guest
-        </button>
+            <button
+              onClick={handleGuest}
+              className="w-full px-4 py-3.5 rounded-lg border border-border text-sm font-medium text-text-secondary hover:text-text hover:border-border-hover"
+            >
+              Try as guest
+            </button>
+          </>
+        )}
       </div>
 
       {/* Footer note */}
