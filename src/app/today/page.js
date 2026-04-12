@@ -1,0 +1,145 @@
+"use client";
+
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+import { getEntry, upsertEntry } from "@/lib/entries";
+import NavToggle from "@/app/components/NavToggle";
+import HabitGrid from "@/app/components/HabitGrid";
+import EnergySlider from "@/app/components/EnergySlider";
+import NetScore from "@/app/components/NetScore";
+import ModeIndicator from "@/app/components/ModeIndicator";
+
+function getToday() {
+  return new Date().toISOString().split("T")[0];
+}
+
+export default function TodayPage() {
+  const router = useRouter();
+  const [userId, setUserId] = useState(null);
+  const [habits, setHabits] = useState({});
+  const [creation, setCreation] = useState(0);
+  const [reflection, setReflection] = useState(0);
+  const [consumption, setConsumption] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+  const saveTimer = useRef(null);
+
+  const net = creation + reflection - consumption;
+
+  // Auth check
+  useEffect(() => {
+    async function init() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        setUserId(session.user.id);
+        return;
+      }
+      const guestId = localStorage.getItem("mode_guest_id");
+      if (guestId) {
+        setUserId(guestId);
+        return;
+      }
+      router.replace("/");
+    }
+    init();
+  }, [router]);
+
+  // Load today's entry
+  useEffect(() => {
+    if (!userId) return;
+    async function load() {
+      const entry = await getEntry(userId, getToday());
+      if (entry) {
+        setHabits(entry.habits || {});
+        setCreation(entry.creation || 0);
+        setReflection(entry.reflection || 0);
+        setConsumption(entry.consumption || 0);
+      }
+      setLoaded(true);
+    }
+    load();
+  }, [userId]);
+
+  // Debounced save
+  const save = useCallback(
+    (h, c, r, co) => {
+      if (!userId) return;
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      saveTimer.current = setTimeout(() => {
+        upsertEntry(userId, getToday(), {
+          habits: h,
+          creation: c,
+          reflection: r,
+          consumption: co,
+        });
+      }, 500);
+    },
+    [userId]
+  );
+
+  function toggleHabit(key) {
+    const next = { ...habits, [key]: !habits[key] };
+    setHabits(next);
+    save(next, creation, reflection, consumption);
+  }
+
+  function updateCreation(v) {
+    setCreation(v);
+    save(habits, v, reflection, consumption);
+  }
+  function updateReflection(v) {
+    setReflection(v);
+    save(habits, creation, v, consumption);
+  }
+  function updateConsumption(v) {
+    setConsumption(v);
+    save(habits, creation, reflection, v);
+  }
+
+  if (!loaded) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="w-5 h-5 border-2 border-border border-t-white rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <NavToggle />
+
+      <HabitGrid habits={habits} onToggle={toggleHabit} />
+
+      <div className="border border-border rounded-lg px-4 py-4 mb-4">
+        <EnergySlider
+          label="Creation"
+          description="You made or shipped something today."
+          value={creation}
+          onChange={updateCreation}
+        />
+        <EnergySlider
+          label="Reflection"
+          description="You paused and thought."
+          value={reflection}
+          onChange={updateReflection}
+        />
+        <EnergySlider
+          label="Consumption"
+          description="Scrolling, watching, drifting."
+          value={consumption}
+          onChange={updateConsumption}
+        />
+      </div>
+
+      <NetScore net={net} />
+
+      <ModeIndicator
+        creation={creation}
+        reflection={reflection}
+        consumption={consumption}
+      />
+    </>
+  );
+}
