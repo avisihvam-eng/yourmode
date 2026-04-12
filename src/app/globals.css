@@ -10,6 +10,7 @@
   --color-text-secondary: #9b9b9b;
   --color-text-tertiary: #5a5a5a;
   --color-white: #ffffff;
+  --color-green: #1D9E75;
   --color-background: #191919;
   --color-foreground: #ebebeb;
   --font-sans: var(--font-inter);
@@ -37,25 +38,27 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: var(--color-white);
-  border: none;
+  background: var(--color-green);
+  border: 2px solid var(--color-bg);
+  box-shadow: 0 0 0 2px var(--color-green);
   cursor: pointer;
   transition: transform 0.1s ease;
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
-  transform: scale(1.15);
+  transform: scale(1.2);
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: var(--color-white);
-  border: none;
+  background: var(--color-green);
+  border: 2px solid var(--color-bg);
+  box-shadow: 0 0 0 2px var(--color-green);
   cursor: pointer;
 }
 
