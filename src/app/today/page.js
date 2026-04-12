@@ -159,7 +159,12 @@ export default function TodayPage() {
         />
       </div>
 
-      <NetScore net={net} />
+      <NetScore 
+        net={net} 
+        creation={creation} 
+        reflection={reflection} 
+        consumption={consumption} 
+      />
 
       <ModeIndicator
         creation={creation}
