@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState("");
 
   useEffect(() => {
     async function checkAuth() {
@@ -28,13 +29,17 @@ export default function Home() {
   }, [router]);
 
   async function handleGoogle() {
+    setAuthError("");
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/today`,
       },
     });
-    if (error) console.error("OAuth error:", error);
+    if (error) {
+      console.error("OAuth error:", error);
+      setAuthError("Google login is not fully configured in Supabase yet.");
+    }
   }
 
   function handleGuest() {
@@ -93,6 +98,11 @@ export default function Home() {
 
       {/* Buttons */}
       <div className="w-full space-y-3 mb-6">
+        {authError && (
+          <div className="p-3 mb-3 text-sm text-bg bg-white rounded-lg font-medium text-center border-l-4 border-l-red-500">
+            {authError}
+          </div>
+        )}
         <button
           onClick={handleGoogle}
           className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-lg bg-white text-bg text-sm font-semibold"
