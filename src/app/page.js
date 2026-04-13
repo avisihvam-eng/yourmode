@@ -33,11 +33,7 @@ export default function Home() {
 
   // 1. Auth Check
   useEffect(() => {
-    async function initAuth() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      
+    function handleSession(session) {
       if (session) {
         setSessionUser(session.user);
         setUserId(session.user.id);
@@ -52,10 +48,22 @@ export default function Home() {
         }
         setUserId(guestId);
         setUserName("");
+        setSessionUser(null);
       }
       setAuthLoading(false);
     }
-    initAuth();
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      handleSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // 2. Load Data when userId or date changes
@@ -180,21 +188,6 @@ export default function Home() {
         <p className="text-sm font-semibold text-text mb-4 bg-bg-card border border-border inline-block px-4 py-2 rounded-lg">
           (Creation + Reflection) {">"} Consumption
         </p>
-
-        <div className="grid grid-cols-1 gap-3 text-left bg-bg-card p-4 rounded-xl border border-border mt-3 text-sm">
-          <div>
-            <span className="text-white font-medium block">Creation</span>
-            <span className="text-text-secondary text-xs">You made or shipped something today.</span>
-          </div>
-          <div>
-            <span className="text-white font-medium block">Reflection</span>
-            <span className="text-text-secondary text-xs">You paused and thought.</span>
-          </div>
-          <div>
-            <span className="text-white font-medium block">Consumption</span>
-            <span className="text-text-secondary text-xs">Scrolling, watching, drifting.</span>
-          </div>
-        </div>
       </div>
 
       {/* Date Picker */}
