@@ -6,7 +6,7 @@ import { getEntry, upsertEntry } from "@/lib/entries";
 import ArcRing from "@/app/components/ArcRing";
 import MetricBars from "@/app/components/MetricBars";
 import HabitGrid from "@/app/components/HabitGrid";
-import EnergySlider from "@/app/components/EnergySlider";
+
 import BottomNav from "@/app/components/BottomNav";
 
 function getToday() {
@@ -31,7 +31,7 @@ export default function TodayPage() {
 
   const [authLoading, setAuthLoading] = useState(true);
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [showLog, setShowLog] = useState(false);
+
   const saveTimer = useRef(null);
 
   const net = creation + reflection - consumption;
@@ -156,7 +156,10 @@ export default function TodayPage() {
       {dataLoaded && (
         <div className="flex flex-col items-center px-4">
           <ArcRing score={net} />
-          <MetricBars creation={creation} reflection={reflection} consumption={consumption} />
+          <MetricBars
+            creation={creation} reflection={reflection} consumption={consumption}
+            onCreation={updateCreation} onReflection={updateReflection} onConsumption={updateConsumption}
+          />
         </div>
       )}
 
@@ -170,36 +173,7 @@ export default function TodayPage() {
         </div>
       )}
 
-      {/* Log Energy button / panel */}
-      <div className="px-4 mt-2">
-        {!showLog ? (
-          <button
-            onClick={() => setShowLog(true)}
-            className="w-full py-3.5 rounded-2xl text-sm font-bold transition-all"
-            style={{ background: "#141414", border: "1px solid #1e1e1e", color: "#1DB47A" }}
-          >
-            ✏️ Log Energy Levels
-          </button>
-        ) : (
-          <div className="rounded-2xl p-4" style={{ background: "#141414", border: "1px solid #1e1e1e" }}>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-bold text-white">Rate your day</span>
-              <button onClick={() => setShowLog(false)} className="text-xs text-text-tertiary hover:text-white">Done</button>
-            </div>
 
-            <EnergySlider label="Creation" description="Building, writing, shipping" value={creation} onChange={updateCreation} />
-            <EnergySlider label="Reflection" description="Thinking, journaling, walking" value={reflection} onChange={updateReflection} />
-            <EnergySlider label="Consumption" description="Scrolling, watching, drifting" value={consumption} onChange={updateConsumption} isRed />
-
-            <div
-              className="text-center text-sm font-mono mt-3 py-2 rounded-xl"
-              style={{ background: "#0a0a0a", color: "#1DB47A" }}
-            >
-              ({creation} + {reflection}) − {consumption} = {net > 0 ? "+" : ""}{net}
-            </div>
-          </div>
-        )}
-      </div>
 
       <BottomNav />
     </div>
