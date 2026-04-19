@@ -1,18 +1,23 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-bg: #191919;
-  --color-bg-hover: #222222;
-  --color-bg-card: #202020;
-  --color-border: #2e2e2e;
-  --color-border-hover: #404040;
-  --color-text: #ebebeb;
-  --color-text-secondary: #9b9b9b;
-  --color-text-tertiary: #5a5a5a;
+  --color-bg: #0a0a0a;
+  --color-bg-card: #141414;
+  --color-bg-elevated: #1a1a1a;
+  --color-border: #1e1e1e;
+  --color-border-hover: #2e2e2e;
+  --color-text: #e8e8e8;
+  --color-text-secondary: #888888;
+  --color-text-tertiary: #444444;
   --color-white: #ffffff;
-  --color-green: #1D9E75;
-  --color-background: #191919;
-  --color-foreground: #ebebeb;
+  --color-teal: #1DB47A;
+  --color-teal-glow: rgba(29, 180, 122, 0.15);
+  --color-amber: #F5A623;
+  --color-amber-glow: rgba(245, 166, 35, 0.15);
+  --color-red: #E5484D;
+  --color-red-glow: rgba(229, 72, 77, 0.15);
+  --color-background: #0a0a0a;
+  --color-foreground: #e8e8e8;
   --font-sans: var(--font-inter);
 }
 
@@ -23,7 +28,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom range slider — Notion style */
+/* Custom range slider */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -35,17 +40,26 @@ input[type="range"] {
   cursor: pointer;
 }
 
+input[type="range"].slider-teal::-webkit-slider-runnable-track {
+  background: linear-gradient(to right, var(--color-teal) var(--val, 0%), var(--color-border) var(--val, 0%));
+}
+
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: var(--color-green);
+  background: var(--color-teal);
   border: 2px solid var(--color-bg);
-  box-shadow: 0 0 0 2px var(--color-green);
+  box-shadow: 0 0 0 2px var(--color-teal), 0 0 12px rgba(29, 180, 122, 0.4);
   cursor: pointer;
-  transition: transform 0.1s ease;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+input[type="range"].slider-red::-webkit-slider-thumb {
+  background: var(--color-red);
+  box-shadow: 0 0 0 2px var(--color-red), 0 0 12px rgba(229, 72, 77, 0.4);
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
@@ -53,18 +67,10 @@ input[type="range"]::-webkit-slider-thumb:active {
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: var(--color-green);
+  background: var(--color-teal);
   border: 2px solid var(--color-bg);
-  box-shadow: 0 0 0 2px var(--color-green);
   cursor: pointer;
 }
-
-input[type="range"]::-webkit-slider-runnable-track {
-  height: 4px;
-  border-radius: 2px;
-}
-
-/* No transition on everything — keep it snappy like Notion */
