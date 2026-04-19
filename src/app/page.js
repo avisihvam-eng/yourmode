@@ -163,8 +163,67 @@ export default function TodayPage() {
         </div>
       )}
 
+      {/* Philosophy + Live Equation */}
+      {dataLoaded && (
+        <div className="px-4 mt-5 mb-2">
+          {/* The formula */}
+          <div className="text-center mb-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-text-tertiary mb-2">
+              The Principle
+            </p>
+            <p
+              className="text-base font-bold tracking-tight"
+              style={{ color: "#e8e8e8" }}
+            >
+              (Creation + Reflection){" "}
+              <span style={{ color: net >= 0 ? "#1DB47A" : "#E5484D" }}>
+                {net >= 0 ? ">" : "<"}
+              </span>{" "}
+              Consumption
+            </p>
+          </div>
+
+          {/* Dynamic coaching message */}
+          <div
+            className="text-center py-3 px-4 rounded-2xl"
+            style={{ background: "#141414", border: "1px solid #1e1e1e" }}
+          >
+            {net >= 5 && (
+              <>
+                <p className="text-sm font-semibold text-white">You&apos;re in flow. 🔥</p>
+                <p className="text-xs text-text-tertiary mt-0.5">Creating far more than consuming — this is the state to protect.</p>
+              </>
+            )}
+            {net >= 1 && net < 5 && (
+              <>
+                <p className="text-sm font-semibold text-white">You&apos;re building today.</p>
+                <p className="text-xs text-text-tertiary mt-0.5">Output is outpacing intake. Push creation a little further.</p>
+              </>
+            )}
+            {net === 0 && (
+              <>
+                <p className="text-sm font-semibold text-white">Dead even. ⚖️</p>
+                <p className="text-xs text-text-tertiary mt-0.5">Creation + Reflection must be <em>greater</em> than Consumption — not equal. Tip the scale.</p>
+              </>
+            )}
+            {net <= -1 && net > -5 && (
+              <>
+                <p className="text-sm font-semibold" style={{ color: "#E5484D" }}>Consumption is winning.</p>
+                <p className="text-xs text-text-tertiary mt-0.5">Your brain absorbs what you feed it most. Shift the balance before the day ends.</p>
+              </>
+            )}
+            {net <= -5 && (
+              <>
+                <p className="text-sm font-semibold" style={{ color: "#E5484D" }}>Deep drift. 📱</p>
+                <p className="text-xs text-text-tertiary mt-0.5">Heavy consumption day. Not every day is perfect — but log it honestly and start fresh tomorrow.</p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Separator */}
-      <div className="mx-4 mt-6 mb-4" style={{ height: "1px", background: "#1e1e1e" }} />
+      <div className="mx-4 mt-5 mb-4" style={{ height: "1px", background: "#1e1e1e" }} />
 
       {/* Habits */}
       {dataLoaded && (
