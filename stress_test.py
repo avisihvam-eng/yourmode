@@ -64,9 +64,9 @@ async def main():
     # Note on production readiness
     print("\nProduction Readiness Check:")
     if success_count == TOTAL_REQUESTS and p95_time < 500:
-        print("✅ Frontend is production-ready. Vercel CDN successfully handled concurrent traffic.")
+        print("[PASS] Frontend is production-ready. Vercel CDN successfully handled concurrent traffic.")
     else:
-        print("⚠️ Frontend experienced slowness or failures. Might need caching improvements or rate limit checks.")
+        print("[WARN] Frontend experienced slowness or failures. Might need caching improvements or rate limit checks.")
 
 if __name__ == "__main__":
     asyncio.run(main())
